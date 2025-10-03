@@ -1,0 +1,103 @@
+/**
+ * This program reads the coordinates of three points that could form the
+ * vertices of a triangle. It computes the distances between each pair of
+ * points, checks the triangle inequality, and if valid, calculates the
+ * perimeter, area (using Heron's formula), centroid, and classifies the
+ * triangle as acute, right, or obtuse. If the triangle inequality is not
+ * satisfied, the program reports that the three points are colinear.
+ *
+ * @author Day'Quan Williams
+ * <pre>
+ * File: TriangleClassifier.cpp
+ * Course: CSC 1253 Section 1
+ * Programming Project: 2
+ * DATE COMPLETED: October 3, 2025
+ * Instructor: Dr. Duncan
+ * </pre>
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+
+// Function to compute Euclidean distance
+double distance(double x1, double y1, double x2, double y2) {
+    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+}
+
+// Floating-point comparison helper
+bool nearlyEqual(double a, double b, double eps = 1e-6) {
+    return fabs(a - b) < eps;
+}
+
+int main() {
+    // Input vertices
+    double x1, y1, x2, y2, x3, y3;
+    cout << "Enter the x and y coordinates of the first vertex =\n> ";
+    cin >> x1 >> y1;
+    cout << "Enter the x and y coordinates of the second vertex =\n> ";
+    cin >> x2 >> y2;
+    cout << "Enter the x and y coordinates of the third vertex =\n> ";
+    cin >> x3 >> y3;
+
+    // Distances
+    double d12 = distance(x1, y1, x2, y2);
+    double d13 = distance(x1, y1, x3, y3);
+    double d23 = distance(x2, y2, x3, y3);
+
+    cout << fixed << setprecision(3);
+    cout << "\nTriangle Results :\n";
+    cout << "P1 = (" << x1 << "," << y1 << ") ; "
+         << "P2 = (" << x2 << "," << y2 << ") ; "
+         << "P3 = (" << x3 << "," << y3 << ")\n";
+    cout << "P1P2 = " << d12 << "; "
+         << "P1P3 = " << d13 << "; "
+         << "P2P3 = " << d23 << "\n";
+
+    // Check triangle inequality
+    if ((d12 + d13 <= d23) || (d12 + d23 <= d13) || (d13 + d23 <= d12)) {
+        cout << "Classification : Not a Triangle ; P1, P2 and P3 are Colinear\n";
+        return 0;
+    }
+
+    // Perimeter
+    double perimeter = d12 + d13 + d23;
+    double s = perimeter / 2.0; // semiperimeter
+
+    // Area (Heron's formula)
+    double area = sqrt(s * (s - d12) * (s - d13) * (s - d23));
+
+    // Centroid
+    double gx = (x1 + x2 + x3) / 3.0;
+    double gy = (y1 + y2 + y3) / 3.0;
+
+    cout << "Centroid = (" << gx << " ," << gy << ")\n";
+    cout << "Perimeter : " << perimeter << "; "
+         << "Area: " << area << "\n";
+
+    // Classification by angle
+    double a = d12, b = d13, c = d23;
+    double maxSide = max(a, max(b, c));
+    double sumSquares;
+
+    if (nearlyEqual(maxSide, a)) {
+        sumSquares = b*b + c*c;
+    } else if (nearlyEqual(maxSide, b)) {
+        sumSquares = a*a + c*c;
+    } else {
+        sumSquares = a*a + b*b;
+    }
+
+    double maxSq = maxSide * maxSide;
+
+    if (maxSq < sumSquares) {
+        cout << "Classification : acute\n";
+    } else if (maxSq > sumSquares) {
+        cout << "Classification : obtuse\n";
+    } else {
+        cout << "Classification : right\n";
+    }
+
+    return 0;
+}
